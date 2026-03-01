@@ -4,7 +4,7 @@ Tags: monitoring, updates, notifications, fizwatch, error-tracking
 Requires at least: 5.9
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: MIT
 
 Monitor WordPress plugin lifecycle events, available updates, and PHP errors with FizWatch.
@@ -33,6 +33,10 @@ FizWatch connects your WordPress site to your self-hosted FizWatch instance for 
 6. Optionally enable "PHP Error Reporting" to capture uncaught exceptions and fatal errors
 
 == Changelog ==
+
+= 1.2.0 =
+* Added actor context (username and IP address) to plugin lifecycle events for attribution
+* Includes previously uncommitted v1.1.0 error reporter feature
 
 = 1.1.0 =
 * Added PHP error reporting — captures uncaught exceptions and fatal errors
