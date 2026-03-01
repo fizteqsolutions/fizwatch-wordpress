@@ -37,11 +37,11 @@ class FizWatch_Lifecycle
         $name = $this->get_plugin_name($plugin);
 
         FizWatch::instance()->send_events([
-            [
+            array_merge([
                 'type' => 'plugin_activated',
                 'slug' => $plugin,
                 'name' => $name,
-            ],
+            ], self::get_actor_context()),
         ]);
     }
 
@@ -59,11 +59,11 @@ class FizWatch_Lifecycle
         $name = $this->get_plugin_name($plugin);
 
         FizWatch::instance()->send_events([
-            [
+            array_merge([
                 'type' => 'plugin_deactivated',
                 'slug' => $plugin,
                 'name' => $name,
-            ],
+            ], self::get_actor_context()),
         ]);
     }
 
@@ -101,11 +101,11 @@ class FizWatch_Lifecycle
         }
 
         FizWatch::instance()->send_events([
-            [
+            array_merge([
                 'type' => 'plugin_installed',
                 'slug' => $slug,
                 'name' => $name,
-            ],
+            ], self::get_actor_context()),
         ]);
     }
 
@@ -119,11 +119,11 @@ class FizWatch_Lifecycle
         }
 
         FizWatch::instance()->send_events([
-            [
+            array_merge([
                 'type' => 'plugin_activated',
                 'slug' => FIZWATCH_PLUGIN_BASENAME,
                 'name' => 'FizWatch',
-            ],
+            ], self::get_actor_context()),
         ]);
     }
 
@@ -135,12 +135,35 @@ class FizWatch_Lifecycle
         wp_clear_scheduled_hook('fizwatch_daily_update_check');
 
         FizWatch::instance()->send_events([
-            [
+            array_merge([
                 'type' => 'plugin_deactivated',
                 'slug' => FIZWATCH_PLUGIN_BASENAME,
                 'name' => 'FizWatch',
-            ],
+            ], self::get_actor_context()),
         ]);
+    }
+
+    /**
+     * Get the current actor context (username and IP) for event attribution.
+     *
+     * @return array<string, string>
+     */
+    private static function get_actor_context()
+    {
+        $context = [];
+
+        if (function_exists('wp_get_current_user')) {
+            $user = wp_get_current_user();
+            if ($user->exists()) {
+                $context['user'] = $user->user_login;
+            }
+        }
+
+        if (!empty($_SERVER['REMOTE_ADDR'])) {
+            $context['ip_address'] = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
+        }
+
+        return $context;
     }
 
     /**

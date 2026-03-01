@@ -35,5 +35,6 @@ if (!empty($url) && !empty($key)) {
 delete_option('fizwatch_url');
 delete_option('fizwatch_key');
 delete_option('fizwatch_pending_updates');
+delete_option('fizwatch_error_reporting');
 
 wp_clear_scheduled_hook('fizwatch_daily_update_check');

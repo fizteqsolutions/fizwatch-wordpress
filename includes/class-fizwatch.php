@@ -111,6 +111,24 @@ class FizWatch
     }
 
     /**
+     * Send an error report to the FizWatch API.
+     *
+     * @param array $payload Error report data matching the /api/v1/errors format.
+     * @return bool Whether the request was successful.
+     */
+    public function send_error($payload)
+    {
+        $url = get_option('fizwatch_url', '');
+        $key = get_option('fizwatch_key', '');
+
+        if (empty($url) || empty($key)) {
+            return false;
+        }
+
+        return $this->post($url . '/api/v1/errors', $key, $payload);
+    }
+
+    /**
      * Compute fingerprint matching the server-side algorithm.
      *
      * @param string $class
@@ -133,6 +151,12 @@ class FizWatch
     private function post($url, $key, $payload)
     {
         try {
+            $json = wp_json_encode($payload);
+
+            if ($json === false) {
+                return false;
+            }
+
             $response = wp_remote_post($url, [
                 'timeout' => 10,
                 'headers' => [
@@ -140,7 +164,7 @@ class FizWatch
                     'Accept' => 'application/json',
                     'X-FizWatch-Key' => $key,
                 ],
-                'body' => wp_json_encode($payload),
+                'body' => $json,
             ]);
 
             if (is_wp_error($response)) {
@@ -150,7 +174,7 @@ class FizWatch
             $code = wp_remote_retrieve_response_code($response);
 
             return $code >= 200 && $code < 300;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }

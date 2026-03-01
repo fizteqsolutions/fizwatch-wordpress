@@ -71,6 +71,29 @@ class FizWatch_Settings
             'fizwatch',
             'fizwatch_main'
         );
+
+        register_setting('fizwatch_settings', 'fizwatch_error_reporting', [
+            'type' => 'boolean',
+            'sanitize_callback' => function ($value) {
+                return (bool) $value;
+            },
+            'default' => false,
+        ]);
+
+        add_settings_section(
+            'fizwatch_error_reporting',
+            'Error Reporting',
+            null,
+            'fizwatch'
+        );
+
+        add_settings_field(
+            'fizwatch_error_reporting',
+            'Enable PHP Error Reporting',
+            [$this, 'render_error_reporting_field'],
+            'fizwatch',
+            'fizwatch_error_reporting'
+        );
     }
 
     public function render_url_field()
@@ -85,6 +108,16 @@ class FizWatch_Settings
         $value = get_option('fizwatch_key', '');
         echo '<input type="password" name="fizwatch_key" value="'.esc_attr($value).'" class="regular-text" placeholder="fiz_..." />';
         echo '<p class="description">The API key for your project in FizWatch.</p>';
+    }
+
+    public function render_error_reporting_field()
+    {
+        $value = get_option('fizwatch_error_reporting', false);
+        echo '<label>';
+        echo '<input type="checkbox" name="fizwatch_error_reporting" value="1" '.checked($value, true, false).' />';
+        echo ' Send uncaught exceptions and fatal PHP errors to FizWatch';
+        echo '</label>';
+        echo '<p class="description">When enabled, uncaught exceptions and fatal PHP errors will be sent to FizWatch.</p>';
     }
 
     public function render_settings_page()
